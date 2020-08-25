@@ -22,14 +22,10 @@ Order_goodsDao.prototype.newAOrder_goods = function(orderId,dishId,number,price,
                 throw err;
         });
 }
-
 Order_goodsDao.prototype.findOrder_goodsBy_orderId = function(orderId,callback){
     var sqlCode = 'SELECT *\
                    FROM order_goods\
-                   WHERE orderId = ?';
-
-                   
-
+                   WHERE orderId = ?';            
     MySQL
         .query(sqlCode,[orderId],function(err,rows){
             if(err)

@@ -78,19 +78,25 @@ CustomerDao.prototype.canNotBeDuplicate = function(name,phoneNum,callback){
         });
 }
 
-//don't work
 CustomerDao.prototype.newCustomer = function(newCAddress,newCPhone,
-    newCName,newCPassword){
-    var sqlCode = "INSERT INTO customer (cAddress,cPhoneNum\
-                                        ,cName,cPassword)\
-                   VALUES ?";
-    MySQL
-        .query(sqlCode,[[newCAddress],[newCPhone],[newCName],[newCPassword]],function(err){
+    newCName,newCPassword,callback){
+    
+    this.canNotBeDuplicate(newCName,newCPhone,function(result){
+        if(result === "HaveDuplicateData"){
+            callback("HaveDuplicateData");
+            return;
+        }
+        var sqlCode = "INSERT INTO customer (cAddress,cPhoneNum,cName,cPassword) VALUES ?";
+        MySQL
+        .query(sqlCode,[[[newCAddress,newCPhone,newCName,newCPassword]]],function(err){
             if(err)
-                //result = err;
                 throw err;
-            
+                
+            callback("OK");
+            return;
         })
+
+    })
 }
 
 CustomerDao.prototype.deleteCustomer = function(delItem,callback){

@@ -91,46 +91,58 @@ RestaurantDao.prototype.canNotBeDuplicate = function(phoneNum,name,callback){
                 throw err;
             if(rows.length >= 1){
                 callback("HaveDuplicateData");
+                return
             }
             else{
                 callback("OK");
+                return
             }
             
         });
 }
 
 RestaurantDao.prototype.newRestaurant = function(newRAddress,newRPhone,
-    newRName,newRPassword){
-    var sqlCode = "INSERT INTO store (storeAddress,storePhoneNum\
-                                        ,storeName,password)\
-                   VALUES ?";
-    MySQL
-        .query(sqlCode,[[newRAddress],[newRPhone],[newRName],[newRPassword]],function(err){
-            if(err)   
-                throw err;
-        })
-}
+    newRName,newRPassword,callback){
+    
+        var checkDeplicateQuery = "SELECT storeID FROM store WHERE storePhoneNum = ? OR storeName = ? ";
 
-RestaurantDao.prototype.deleteRestaurant = function(delItem){
-    var sqlCode1 = "DELETE FROM store \
-                    WHERE storeID = ?";
-    var sqlCode2 = "DELETE FROM store \
-                    WHERE storeName = ?";
-    var sqlCode;
-    if(typeof(delItem) === 'number'){
-        sqlCode = sqlCode1;
-    }else if(typeof(delItem) === 'string'){
-        sqlCode = sqlCode2;
-    }else{
-        throw Error;
-    }
-    MySQL
-        .query(sqlCode,[[delItem]],function(err){
+        var insertQuery = "INSERT INTO store (storeAddress,storePhoneNum ,storeName,password) VALUES ?";
+
+        MySQL
+            .query(checkDeplicateQuery,[ [newRPhone],[newRName] ],function(err,rows){
             if(err)
                 throw err;
-            console.log("1 record deleted");
-            callback("Delete success");
+            if(rows.length >= 1){
+                callback("ErrHaveDuplicateData");
+                return
+            }
+            else{
+                MySQL
+                .query(insertQuery,[[[newRAddress,newRPhone,newRName,newRPassword]]],function(err){
+                    if(err)   
+                        throw err;
+                })
+                callback("OK");
+            }
+        });    
+}
+
+RestaurantDao.prototype.deleteRestaurant = function(rid,callback){
+    this.findById(rid,function(restaurant){
+        if(restaurant === undefined){
+            callback("RestaurantNotExist");
+            return;
+        }
+
+        let sqlCode = "DELETE FROM store WHERE storeID = ?";
+        MySQL
+        .query(sqlCode,[[rid]],function(err){
+            if(err)
+                throw err;
+            callback("OK");
+            return;
         })
+    })
 }
 
 RestaurantDao.prototype.testABC = function(x){

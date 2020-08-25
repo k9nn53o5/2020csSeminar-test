@@ -20,23 +20,20 @@ OrderDao.prototype.newOrder = function(order_num,cId,pay_price,
     is_pay,pay_time,is_ship,
     ship_time,is_receipt,receipt_time,
     ship_number,status,create_time,
-    update_time,ship_man_id,rId){
+    update_time,ship_man_id,rId,callback){
 
-    var sqlCode = "INSERT INTO dbtest2020_4_2.order (order_num,cId,pay_price,is_pay,pay_time,is_ship,ship_time,is_receipt,receipt_time,ship_number,status,create_time,update_time,ship_man_id,rId)\
-                   VALUES ?";
+    var sqlCode = 'INSERT INTO dbtest2020_4_2.order (order_num,cId,pay_price,is_pay,pay_time,is_ship,ship_time,is_receipt,receipt_time,ship_number,status,create_time,update_time,ship_man_id,rId) VALUES ?';
     
     MySQL
         .query(sqlCode,
-            [ [order_num],[cId],[pay_price],
-            [is_pay],[pay_time],[is_ship],
-            [ship_time],[is_receipt],[receipt_time],
-            [ship_number],[status],[create_time],
-            [update_time],[ship_man_id],[rId] ],
+            [[[order_num,cId,pay_price,is_pay,pay_time,is_ship,ship_time,is_receipt,receipt_time,ship_number,status,create_time,update_time,ship_man_id,rId]]],
             function(err){
             if(err)
                 throw err;
             });
-}
+            callback("OK")
+    }
+
 OrderDao.prototype.findOrderBy_rId = function(rId,callback){
     var sqlCode = 'SELECT *\
                    FROM dbtest2020_4_2.order\
@@ -64,6 +61,48 @@ OrderDao.prototype.findOrderIdBy_cId_create_time = function(cId,create_time,call
                    WHERE cId = ? AND create_time = ?';
     MySQL
         .query(sqlCode,[cId,create_time],function(err,rows){
+            if(err)
+                    throw err;
+            var results = [];
+            rows.forEach(element => {
+                results.push(new Order(
+                    element.id, element.order_num, element.cId, element.pay_price,
+                    element.is_pay, element.pay_time, element.is_ship, element.ship_time,
+                    element.is_receipt, element.receipt_time, element.ship_number, element.status,
+                    element.create_time, element.update_time,  element.ship_man_id,element.rId
+                ))
+            });
+            callback(results);
+        });
+}
+
+OrderDao.prototype.findOrderIdBy_cId = function(cId,callback){
+    var sqlCode = 'SELECT *\
+                   FROM dbtest2020_4_2.order\
+                   WHERE cId = ?';
+    MySQL
+        .query(sqlCode,[cId],function(err,rows){
+            if(err)
+                    throw err;
+            var results = [];
+            rows.forEach(element => {
+                results.push(new Order(
+                    element.id, element.order_num, element.cId, element.pay_price,
+                    element.is_pay, element.pay_time, element.is_ship, element.ship_time,
+                    element.is_receipt, element.receipt_time, element.ship_number, element.status,
+                    element.create_time, element.update_time,  element.ship_man_id,element.rId
+                ))
+            });
+            callback(results);
+        });
+}
+
+OrderDao.prototype.findOrderIdBy_oId = function(oId,callback){
+    var sqlCode = 'SELECT *\
+                   FROM dbtest2020_4_2.order\
+                   WHERE id = ?';
+    MySQL
+        .query(sqlCode,[oId],function(err,rows){
             if(err)
                     throw err;
             var results = [];

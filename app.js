@@ -19,8 +19,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
 global.MySQL = mysql.createConnection({
 	host : 'localhost',
 	user : 'root',
@@ -29,9 +27,9 @@ global.MySQL = mysql.createConnection({
 });
 
 //app.use('/', require('./routes/index'));
-//app.use('/demo', require('./routes/demo_test'));
-//app.use('/restaurants',require('./routes/restaurantAPI'));
-app.use('/', require('./routes/restaurantAPI'));
+
+app.use('/restaurants', require('./routes/restaurantAPI'));
+app.use('/customers',require('./routes/customerAPI'));
 /*
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

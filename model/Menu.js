@@ -141,35 +141,47 @@ MenuDao.prototype.canNotBeDuplicate = function(name,callback){
 
 
 //can't deal with duplication 
-MenuDao.prototype.insertMenu = function(mName,mStoreId,mPrice){
-    var sqlCode = "INSERT INTO menus (dishName, dishStoreId, price)\
+MenuDao.prototype.insertMenu = function(mName,mStoreId,mPrice,callback){
+
+    this.canNotBeDuplicate(mName,function(result){
+        if(result === "HaveDuplicateData"){
+            callback("ErrHaveDuplicateData")
+            return
+        }
+        let sqlCode = "INSERT INTO menus (dishName, dishStoreId, price)\
                    VALUES ?";
-    MySQL
-        .query(sqlCode,[[mName],[mStoreId],[mPrice]],function(err){
+        MySQL
+        .query(sqlCode,[[[mName,mStoreId,mPrice]]],function(err){
             if(err)
                 throw err;
+                return
         });
+        callback("OK")
+    })
+
+    
 }
 //choose dishId or dishName to delete the row
-MenuDao.prototype.deleteMenu = function(delItem){
-    var sqlCode1 = "DELETE FROM menus \
+MenuDao.prototype.deleteMenu = function(mid,callback){
+    
+    this.findFoodBydishId(mid,function(food){
+        if(food === undefined){
+            callback("FoodNotExist");
+            return
+        }
+        else{
+            let sqlCode = "DELETE FROM menus \
                     WHERE dishId = ?";
-    var sqlCode2 = "DELETE FROM menus \
-                    WHERE dishName = ?";
-    var sqlCode;
-    if(typeof(delItem) === 'number'){
-        sqlCode = sqlCode1;
-    }else if(typeof(delItem) === 'string'){
-        sqlCode = sqlCode2;
-    }else{
-        throw Error;
-    }
-    MySQL
-        .query(sqlCode,[[delItem]],function(err){
-            if(err)
-                throw err;
-            console.log("1 record deleted");
-        })
+            MySQL
+                .query(sqlCode,[[mid]],function(err){
+                    if(err)
+                        throw err;
+                    callback("OK");
+                    
+                })
+            return
+        }
+    })
 }
 
 //don't work
