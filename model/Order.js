@@ -16,22 +16,25 @@ function Order(id,order_num,cId,
 function OrderDao(){
 }
 
-OrderDao.prototype.newOrder = function(order_num,cId,pay_price,
-    is_pay,pay_time,is_ship,
-    ship_time,is_receipt,receipt_time,
-    ship_number,status,create_time,
-    update_time,ship_man_id,rId,callback){
-
+OrderDao.prototype.newOrder = function(order_num,cId,pay_price,rId,callback){
     var sqlCode = 'INSERT INTO dbtest2020_4_2.order (order_num,cId,pay_price,is_pay,pay_time,is_ship,ship_time,is_receipt,receipt_time,ship_number,status,create_time,update_time,ship_man_id,rId) VALUES ?';
-    
+   
+    var currentDate = new Date();
+    var time = currentDate.getHours()+":"+currentDate.getMinutes();
+    var date = currentDate.getDate();
+    var month = currentDate.getMonth();
+    var year = currentDate.getFullYear();
+    var datetimeStr = year + "-" + (month+1) + "-" + date + " " + time;
+    create_time = datetimeStr;
+
     MySQL
-        .query(sqlCode,
-            [[[order_num,cId,pay_price,is_pay,pay_time,is_ship,ship_time,is_receipt,receipt_time,ship_number,status,create_time,update_time,ship_man_id,rId]]],
-            function(err){
-            if(err)
-                throw err;
-            });
-            callback("OK")
+    .query(sqlCode,
+        [[[order_num,cId,pay_price,0,null,0,null,0,null,null,'Sending',create_time,null,null,rId]]],
+        function(err){
+        if(err)
+            throw err;
+        });
+        callback("OK")
     }
 
 OrderDao.prototype.findOrderBy_rId = function(rId,callback){
@@ -55,7 +58,7 @@ OrderDao.prototype.findOrderBy_rId = function(rId,callback){
         });
 }
 
-OrderDao.prototype.findOrderIdBy_cId_create_time = function(cId,create_time,callback){
+OrderDao.prototype.findOrderBy_cId_create_time = function(cId,create_time,callback){
     var sqlCode = 'SELECT *\
                    FROM dbtest2020_4_2.order\
                    WHERE cId = ? AND create_time = ?';
@@ -76,7 +79,7 @@ OrderDao.prototype.findOrderIdBy_cId_create_time = function(cId,create_time,call
         });
 }
 
-OrderDao.prototype.findOrderIdBy_cId = function(cId,callback){
+OrderDao.prototype.findOrderBy_cId = function(cId,callback){
     var sqlCode = 'SELECT *\
                    FROM dbtest2020_4_2.order\
                    WHERE cId = ?';
@@ -97,7 +100,7 @@ OrderDao.prototype.findOrderIdBy_cId = function(cId,callback){
         });
 }
 
-OrderDao.prototype.findOrderIdBy_oId = function(oId,callback){
+OrderDao.prototype.findOrderBy_oId = function(oId,callback){
     var sqlCode = 'SELECT *\
                    FROM dbtest2020_4_2.order\
                    WHERE id = ?';
@@ -105,6 +108,9 @@ OrderDao.prototype.findOrderIdBy_oId = function(oId,callback){
         .query(sqlCode,[oId],function(err,rows){
             if(err)
                     throw err;
+            if(rows.length != 1){
+                callback(undefined);
+            }
             var results = [];
             rows.forEach(element => {
                 results.push(new Order(
@@ -170,10 +176,18 @@ OrderDao.prototype.deliv_take_order = function(curtime,delivId,oId){
         });
 }
 
-OrderDao.prototype.cus_get_food = function(curtime,oId){
+OrderDao.prototype.cus_get_food = function(oId){
     var sqlCode = "UPDATE dbtest2020_4_2.order\
                    SET is_pay=1, pay_time=?, is_receipt=1, receipt_time=?, status='FoodArrived'\
                    WHERE id=?";
+    var currentDate = new Date();
+    var time = currentDate.getHours()+":"+currentDate.getMinutes();
+    var date = currentDate.getDate();
+    var month = currentDate.getMonth();
+    var year = currentDate.getFullYear();
+    var datetimeStr = year + "-" + (month+1) + "-" + date + " " + time;
+    var curtime = datetimeStr;
+
     MySQL
         .query(sqlCode,[[curtime],[curtime],[oId]],function(err){
             if(err)

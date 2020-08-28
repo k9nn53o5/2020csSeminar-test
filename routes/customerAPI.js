@@ -46,42 +46,42 @@ router.get('/:cid',function(req,res){
     return
 })//ok
 
-//尚未實作
-//get the customer orders
 router.get('/:cid/orders',function(req,res){
-	CustomerDao.findById(req.params.cid,function(customer){
-		if(customer === undefined){
-			res.status(410);
-			return
+	OrderDao.findOrderBy_cId(req.params.cid,function(orders){
+		if(orders.lengthc === 0){
+			res.status(204)
 		}
-		OrderDao.findOrderIdBy_cId(req.params.cid,function(orders){
-			let myJson = JSON.stringify(orders);
-			res.status(200).json(myJson);
-			return;
-		})
+		let myJson = JSON.stringify(orders);
+		res.status(200).json(myJson);
+		return;
 	})
 	res.status(501);
-    return;
-})
+	return
+})//ok
 
+//find the specific order and the foods in order
+//not implement
 router.get('/:cid/orders/:oid',function(req,res){
-	CustomerDao.findById(req.params.cid,function(customer){
-		if(customer === undefined){
-			res.status(410);
+	OrderDao.findOrderBy_oId(req.params.oid,function(order){
+		if(order === undefined){
+			res.status(204);
 			return
 		}
-		
-		OrderDao.findOrderIdBy_oId(req.params.oid,function(orders){
-			let myJson = JSON.stringify(orders);
-			res.status(200).json(myJson);
-			return;
+		Order_goodsDao.findOrder_goodsBy_orderId(order.id,function(foods){
+
 		})
+		
+
+		let myJson = JSON.stringify(orders);
+		res.status(200).json(myJson);
+		return;
 	})
+	
 	res.status(501);
     return;
 })
 
-//customer send a order
+//customer insert a new order to restaurant (status:Sending)
 router.post('/:cid/orders',function(req,res){
 	CustomerDao.findById(req.params.cid,function(customer){
 		if(customer === undefined){
@@ -89,10 +89,8 @@ router.post('/:cid/orders',function(req,res){
 			return
 		}
 		order = req.body;
-		OrderDao.newOrder(order.order_num,order.cId,order.pay_price,order.is_pay,
-			order.pay_time,order.is_ship,order.ship_time,order.is_receipt,order.receipt_time,
-			order.ship_number,order.status,order.create_time,order.update_time,order.ship_man_id,order.rId
-			,function(result){
+		OrderDao.newOrder(order.order_num,order.cId,order.pay_price,
+			order.rId,function(result){
 				if(result === "OK"){
 					res.status(200);
 					return;
@@ -102,6 +100,22 @@ router.post('/:cid/orders',function(req,res){
 			});
 	})
 		
+})//ok
+
+//customer get the foods (status:FoodArrived)
+router.put('/:cid/orders/:oid/status/:status',function(req,res){
+	OrderDao.findOrderBy_oId(req.params.oid,function(order){
+		if(order.cId != req.params.cid){
+			res.status(400);
+			return;
+		}
+
+		OrderDao.cus_get_food(req.params.oid);
+		res.status(200);
+		return;
+	})
+	res.status(500);
+	return;
 })
 
 module.exports = router;

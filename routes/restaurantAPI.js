@@ -139,10 +139,35 @@ router.get('/:rid/orders',function(req,res){
     })
     res.status(501);
 });
-//尚未實作
-//the restaurant update the status of the order
+//有bug
+//the restaurant update the status of the order (1)start cooking(status:Cooking) (2)finish cooking(status:FoodWasCooked)
 router.put('/:rid/orders/:oid/status/:status',function(req,res){
-    res.status(501);
+    OrderDao.findOrderBy_oId(req.params.oid,function(order){
+        if(order === undefined){
+            res.status(404);
+            return;
+        }
+        if(order.rid != req.params.rid){
+            res.status(403);
+            return;
+        }
+
+        if(req.params.status === "Sending"){
+            OrderDao.r_start_cooking(req.params.oid);
+            res.status(200);
+            return;
+        }
+        else if(req.params.status === "Cooking"){
+            OrderDao.r_finish_cooking(req.params.oid);
+            res.status(200);
+            return;
+        }
+        else{
+            res.status(400);
+            return;
+        }
+    })
+    
 })
 
 module.exports = router;
