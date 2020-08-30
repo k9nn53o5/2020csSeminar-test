@@ -82,7 +82,7 @@ DeliveryManDao.prototype.newDeliveryMan = function(name, dPhone, dPassword, dSal
     var sqlCode = "INSERT INTO deliveryman (name, dPhone, dPassword, dSalary, dImgPath, identityId)\
                    VALUES ?";
     MySQL
-        .query(sqlCode,[ [name], [dPhone], [dPassword], [dSalary], [dImgPath], [identityId] ],function(err){
+        .query(sqlCode,[[[name, dPhone, dPassword, dSalary, dImgPath, identityId]]],function(err){
             if(err)
                 //result = err;
                 throw err;

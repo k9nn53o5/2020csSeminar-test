@@ -12,7 +12,7 @@ var Order_goodsDao = require('../model/Order_goods').Order_goodsDao;
 //還有get post delete 的 routr 的 url有些是重複的
 
 // get all restaurants info
-router.get('/',function(req,res,next){
+router.get('/',function(req,res){
     RestaurantDao.getAll(function(restaurants){
         var myJson = JSON.stringify(restaurants);
         res.status(200).json(myJson);
@@ -128,7 +128,6 @@ router.get('/:rid',function(req,res){
 //尚未實作//bug 這url名字重複了要改
 //get the restaurants that is around this area
 router.get('/:location',function(req,res){
-
 });
 //尚未實作
 //get the orders from restaurant
@@ -153,14 +152,32 @@ router.put('/:rid/orders/:oid/status/:status',function(req,res){
         }
 
         if(req.params.status === "Sending"){
-            OrderDao.r_start_cooking(req.params.oid);
-            res.status(200);
-            return;
+            OrderDao.r_start_cooking(req.params.oid,function(result){
+                if(result==="orderNotExist"){
+                    res.status(400);
+                    return;
+                }
+                if(result === "orderStatusErr"){
+                    res.status(400);
+                    return;
+                }
+                res.status(200);
+                return;
+            });
         }
         else if(req.params.status === "Cooking"){
-            OrderDao.r_finish_cooking(req.params.oid);
-            res.status(200);
-            return;
+            OrderDao.r_finish_cooking(req.params.oid,function(result){
+                if(result==="orderNotExist"){
+                    res.status(400);
+                    return;
+                }
+                if(result === "orderStatusErr"){
+                    res.status(400);
+                    return;
+                }
+                res.status(200);
+                return;
+            });
         }
         else{
             res.status(400);

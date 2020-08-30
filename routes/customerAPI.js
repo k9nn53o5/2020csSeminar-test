@@ -103,6 +103,7 @@ router.post('/:cid/orders',function(req,res){
 })//ok
 
 //customer get the foods (status:FoodArrived)
+//bug
 router.put('/:cid/orders/:oid/status/:status',function(req,res){
 	OrderDao.findOrderBy_oId(req.params.oid,function(order){
 		if(order.cId != req.params.cid){
@@ -110,9 +111,19 @@ router.put('/:cid/orders/:oid/status/:status',function(req,res){
 			return;
 		}
 
-		OrderDao.cus_get_food(req.params.oid);
-		res.status(200);
-		return;
+		OrderDao.cus_get_food(req.params.oid,function(result){
+			if(result==="orderNotExist"){
+				res.status(400);
+				return;
+			}
+			if(result === "orderStatusErr"){
+				res.status(400);
+				return;
+			}
+			res.status(200);
+			return;
+		});
+		
 	})
 	res.status(500);
 	return;
