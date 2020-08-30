@@ -35,7 +35,7 @@ OrderDao.prototype.newOrder = function(order_num,cId,pay_price,rId,callback){
             throw err;
         });
         callback("OK")
-    }
+}
 
 OrderDao.prototype.findOrderBy_rId = function(rId,callback){
     var sqlCode = 'SELECT *\
@@ -123,6 +123,28 @@ OrderDao.prototype.findOrderBy_oId = function(oId,callback){
             callback(results);
         });
 }
+
+OrderDao.prototype.findOrderBy_dId_status = function(dId,status,callback){
+    var sqlCode = 'SELECT *\
+                   FROM dbtest2020_4_2.order\
+                   WHERE ship_man_id = ? AND status = ?';
+    MySQL
+    .query(sqlCode,[dId,status],function(err,rows){
+        if(err)
+            throw err;
+            
+        var results = [];
+        rows.forEach(element =>{
+            results.push(new Order( element.id, element.order_num, element.cId, element.pay_price,
+                element.is_pay, element.pay_time, element.is_ship, element.ship_time,
+                element.is_receipt, element.receipt_time, element.ship_number, element.status,
+                element.create_time, element.update_time,  element.ship_man_id,element.rId
+            ))
+        })
+        callback(results);
+    })
+}
+
 
 OrderDao.prototype.findOrder_All = function(callback){
     var sqlCode = 'SELECT *\
@@ -277,8 +299,6 @@ OrderDao.prototype.cus_get_food = function(oId,callback){
             callback("OK");
         });
 }
-
-
 
 module.exports.Order = Order;
 module.exports.OrderDao = new OrderDao();

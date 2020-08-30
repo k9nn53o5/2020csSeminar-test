@@ -1,5 +1,4 @@
 var express = require('express');
-const { route } = require('./restaurantAPI');
 var router = express.Router();
 var RestaurantDao = require('../model/Restaurant').RestaurantDao;
 var MenuDao = require('../model/Menu').MenuDao;

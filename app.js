@@ -30,6 +30,7 @@ global.MySQL = mysql.createConnection({
 
 app.use('/restaurants', require('./routes/restaurantAPI'));
 app.use('/customers',require('./routes/customerAPI'));
+app.use('/deliverymans',require('./routes/deliverymanAPI'));
 /*
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

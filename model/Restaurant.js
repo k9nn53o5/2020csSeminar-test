@@ -149,6 +149,10 @@ RestaurantDao.prototype.testABC = function(x){
     return x;
 }
 
+//not implement yet
+Restaurant.prototype.searchNearByR = function(x,y,callback){
+}
+
 module.exports.Restaurant = Restaurant;
 module.exports.RestaurantDao = new RestaurantDao();
 

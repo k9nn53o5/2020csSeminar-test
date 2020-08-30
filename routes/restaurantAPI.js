@@ -5,12 +5,9 @@ var MenuDao = require('../model/Menu').MenuDao;
 var OrderDao = require('../model/Order').OrderDao;
 var Order_goodsDao = require('../model/Order_goods').Order_goodsDao;
 
-
-
 //以下的restful 必須重寫因為必須避免多级 URL
 //像 GET /authors/12/categories/2 要改成 GET /authors/12?categories=2
 //還有get post delete 的 routr 的 url有些是重複的
-
 // get all restaurants info
 router.get('/',function(req,res){
     RestaurantDao.getAll(function(restaurants){
@@ -132,16 +129,12 @@ router.get('/:location',function(req,res){
 //尚未實作
 //get the orders from restaurant
 router.get('/:rid/orders',function(req,res){
-    OrderDao.findOrderBy_rId(req.params.rid,function(orders){
-        order.forEach(element => {
-        });
-    })
-    res.status(501);
 });
 //有bug
 //the restaurant update the status of the order (1)start cooking(status:Cooking) (2)finish cooking(status:FoodWasCooked)
-router.put('/:rid/orders/:oid/status/:status',function(req,res){
-    OrderDao.findOrderBy_oId(req.params.oid,function(order){
+router.put('/:rid/action',function(req,res){
+    restaurantAction = req.body;
+    OrderDao.findOrderBy_oId(restaurantAction.oId,function(order){
         if(order === undefined){
             res.status(404);
             return;
@@ -151,8 +144,8 @@ router.put('/:rid/orders/:oid/status/:status',function(req,res){
             return;
         }
 
-        if(req.params.status === "Sending"){
-            OrderDao.r_start_cooking(req.params.oid,function(result){
+        if(restaurantAction.action === 'Sending'){
+            OrderDao.r_start_cooking(restaurantAction.oId,function(result){
                 if(result==="orderNotExist"){
                     res.status(400);
                     return;
@@ -165,8 +158,8 @@ router.put('/:rid/orders/:oid/status/:status',function(req,res){
                 return;
             });
         }
-        else if(req.params.status === "Cooking"){
-            OrderDao.r_finish_cooking(req.params.oid,function(result){
+        else if(restaurantAction.action === "Cooking"){
+            OrderDao.r_finish_cooking(restaurantAction.oId,function(result){
                 if(result==="orderNotExist"){
                     res.status(400);
                     return;
@@ -186,5 +179,4 @@ router.put('/:rid/orders/:oid/status/:status',function(req,res){
     })
     
 })
-
 module.exports = router;

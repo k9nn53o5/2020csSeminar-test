@@ -23,7 +23,6 @@ DeliveryManDao.prototype.getAll = function(callback){
                 callback(results);
             });
 }
-
 DeliveryManDao.prototype.cName2cId = function(name,callback){
     var sqlCode = 'SELECT id\
     FROM deliveryman\
@@ -58,7 +57,6 @@ DeliveryManDao.prototype.findById = function(id,callback){
     });
     
 }
-
 DeliveryManDao.prototype.canNotBeDuplicate = function(name,phoneNum,callback){
     var sqlCode = "SELECT id\
                    FROM deliveryman\
@@ -76,9 +74,8 @@ DeliveryManDao.prototype.canNotBeDuplicate = function(name,phoneNum,callback){
             
         });
 }
-
 //don't work
-DeliveryManDao.prototype.newDeliveryMan = function(name, dPhone, dPassword, dSalary, dImgPath, identityId){
+DeliveryManDao.prototype.newDeliveryMan = function(name, dPhone, dPassword, dSalary, dImgPath, identityId,callback){
     var sqlCode = "INSERT INTO deliveryman (name, dPhone, dPassword, dSalary, dImgPath, identityId)\
                    VALUES ?";
     MySQL
@@ -86,7 +83,8 @@ DeliveryManDao.prototype.newDeliveryMan = function(name, dPhone, dPassword, dSal
             if(err)
                 //result = err;
                 throw err;
-            
+            callback("OK");
+            return;
         })
 }
 
