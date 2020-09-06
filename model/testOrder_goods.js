@@ -8,6 +8,6 @@ global.MySQL = mysql.createConnection({
 	database : 'dbtest2020_4_2'
 });
 
-//Order_goodsDao.newAOrder_goods([1,1,1,20,"Sending","2020-12-31 23:59:59","2021-12-31 23:59:59"]);
+//Order_goodsDao.newAOrder_goods(1,1,1,20,"Sending","2020-12-31 23:59:59","2021-12-31 23:59:59");
 //Order_goodsDao.findOrder_goodsBy_orderId(1,(result)=>{console.log(result);});
 //Order_goodsDao.dishIdCanNotBeDuplicateInOrder_goods(2,1,(result)=>{console.log(result);})

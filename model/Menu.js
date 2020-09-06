@@ -7,7 +7,6 @@ function Menu(id,storeId,price,name){
 
 function MenuDao(){
 }
-
 //still have db duplicate problem
 MenuDao.prototype.findByRestId = function(resId,callback){
     var sqlCode = 'SELECT dishName, dishId, dishStoreId, price\
@@ -26,7 +25,6 @@ MenuDao.prototype.findByRestId = function(resId,callback){
             callback(results);
         });
 }
-
 MenuDao.prototype.findFoodBydishId = function(dishId,callback){
     MySQL.connect(function(err) {
         //if (err) throw err;
@@ -49,7 +47,6 @@ MenuDao.prototype.findFoodBydishId = function(dishId,callback){
         })
     });
 }
-
 MenuDao.prototype.getAll = function(callback){
     var sqlCode = 'SELECT dishName, dishId, dishStoreId, price\
     FROM menus';
@@ -66,7 +63,6 @@ MenuDao.prototype.getAll = function(callback){
             callback(results);
     });
 }
-
 MenuDao.prototype.dName2dId = function(dName,callback){
     var sqlCode = 'SELECT dishId\
                    FROM menus\
@@ -83,7 +79,6 @@ MenuDao.prototype.dName2dId = function(dName,callback){
             }
         });
 }
-
 MenuDao.prototype.isFoodInResMenu = function(dName,rName,callback){
     var sqlCode = "SELECT EXISTS\
                   (SELECT 1 FROM menus, store \
@@ -101,7 +96,6 @@ MenuDao.prototype.isFoodInResMenu = function(dName,rName,callback){
             }          
         })
 }
-
 MenuDao.prototype.findFoodPrice = function(dishId,callback){
     var sqlCode = "SELECT price\
                    FROM menus\
@@ -119,9 +113,6 @@ MenuDao.prototype.findFoodPrice = function(dishId,callback){
             }
         });
 }
-
-
-
 MenuDao.prototype.canNotBeDuplicate = function(name,callback){
     var sqlCode = "SELECT dishId\
                    FROM menus\
@@ -138,8 +129,6 @@ MenuDao.prototype.canNotBeDuplicate = function(name,callback){
             }           
         });
 }
-
-
 //can't deal with duplication 
 MenuDao.prototype.insertMenu = function(mName,mStoreId,mPrice,callback){
 
@@ -177,13 +166,11 @@ MenuDao.prototype.deleteMenu = function(mid,callback){
                     if(err)
                         throw err;
                     callback("OK");
-                    
                 })
             return
         }
     })
 }
-
 //don't work
 // updateMenu have to fill ALL column
 //we should use dishId not dishName to identify
@@ -202,6 +189,5 @@ MenuDao.prototype.updateMenu = function(dName,newDName,newPrice,callback){
         callback("insert sucess");
     });
 }
-
 module.exports.Menu = Menu;
 module.exports.MenuDao = new MenuDao();
