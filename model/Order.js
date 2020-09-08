@@ -41,6 +41,7 @@ function OrderDao(){
 }
 
 OrderDao.prototype.newOrder = function(order_num,cId,pay_price,rId,callback){
+
     var sqlCode = 'INSERT INTO dbtest2020_4_2.order (order_num,cId,pay_price,is_pay,pay_time,is_ship,ship_time,is_receipt,receipt_time,ship_number,status,create_time,update_time,ship_man_id,rId) VALUES ?';
    
     var currentDate = new Date();
@@ -51,14 +52,23 @@ OrderDao.prototype.newOrder = function(order_num,cId,pay_price,rId,callback){
     var datetimeStr = year + "-" + (month+1) + "-" + date + " " + time;
     create_time = datetimeStr;
 
+
+    var that = this;
     MySQL
     .query(sqlCode,
         [[[0,cId,0,0,null,0,null,0,null,null,'Sending',create_time,null,null,rId]]],
         function(err){
         if(err)
             throw err;
-        });
-        callback("OK")
+        
+        that.findOrderBy_cId_create_time_status(cId,create_time,"Sending",function(order){
+            if(order.length != 1){
+                callback("CustomerOrderStatusErr");
+            }
+            callback(order[0].id);
+        })
+    });
+    
 }
 
 OrderDao.prototype.findOrderBy_rId = function(rId,callback){
@@ -82,12 +92,12 @@ OrderDao.prototype.findOrderBy_rId = function(rId,callback){
         });
 }
 
-OrderDao.prototype.findOrderBy_cId_create_time = function(cId,create_time,callback){
+OrderDao.prototype.findOrderBy_cId_create_time_status = function(cId,create_time,status,callback){
     var sqlCode = 'SELECT *\
                    FROM dbtest2020_4_2.order\
-                   WHERE cId = ? AND create_time = ?';
+                   WHERE cId = ? AND create_time = ? AND status = ?';
     MySQL
-        .query(sqlCode,[cId,create_time],function(err,rows){
+        .query(sqlCode,[cId,create_time,status],function(err,rows){
             if(err)
                     throw err;
             var results = [];
@@ -427,12 +437,13 @@ OrderDao.prototype.insertOrderAndOrderFood_by_oId = function(order_num,cId,pay_p
     var that = this;
     //javascript 語法的麻煩，在this.newOrder不用this因為scope的this是newOrder的this不是gorbal的this
     this.newOrder(order_num,cId,pay_price,rId,function(result){
-        if(result != "OK"){
+        if(typeof result != "number"){
+            //console.log(typeof result);
             callback("NewOrderERR");
             return;
         }
         ogs.forEach(element => {
-            that.newAOrder_goods(element.og_orderId,element.og_dishId,element.og_number,
+            that.newAOrder_goods(result,element.og_dishId,element.og_number,
                 element.og_price,element.og_status,function(ogResult){
                     if(ogResult != "OK"){
                         callback("NewOrder_goodsERR");
@@ -442,6 +453,7 @@ OrderDao.prototype.insertOrderAndOrderFood_by_oId = function(order_num,cId,pay_p
         });
         callback("OK");
     });
+
 }
 
 module.exports.Order = Order;

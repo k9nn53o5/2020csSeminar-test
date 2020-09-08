@@ -18,36 +18,33 @@ global.MySQL = mysql.createConnection({
 //OrderDao.cus_get_food(39,(result)=>{console.log(result)});
 //OrderDao.findOrderAndOrderFood_by_oId(39,(result)=>{console.log(result)});
 
-// var og1 = {
-//     og_id : 12,
-//     og_orderId : 40,
-//     og_dishId :1,
-//     og_number : 1,
-//     og_price : 10,
-//     og_status : "Sending",
-//     og_create_time : "2020-08-29 22:12:00",
-//     og_update_time : "2020-08-29 22:12:00"
-// };
-// var og2 = {
-//     og_id : 13,
-//     og_orderId : 40,
-//     og_dishId :2,
-//     og_number : 1,
-//     og_price : 10,
-//     og_status : "Sending",
-//     og_create_time : "2020-08-29 22:12:00",
-//     og_update_time : "2020-08-29 22:12:00"
-// };
-// var og3 = {
-//     og_id : 14,
-//     og_orderId : 40,
-//     og_dishId :3,
-//     og_number : 1,
-//     og_price : 10,
-//     og_status : "Sending",
-//     og_create_time : "2020-08-29 22:12:00",
-//     og_update_time : "2020-08-29 22:12:00"
-// };
-// var ogs = [og1,og2,og3]
-// OrderDao.insertOrderAndOrderFood_by_oId(10,2,100,5,ogs,()=>{});
+var og1 = {
+    og_id : 12,
+    og_dishId :1,
+    og_number : 1,
+    og_price : 10,
+    og_status : "Sending",
+    og_create_time : "2020-08-29 22:12:00",
+    og_update_time : "2020-08-29 22:12:00"
+};
+var og2 = {
+    og_id : 13,
+    og_dishId :2,
+    og_number : 1,
+    og_price : 10,
+    og_status : "Sending",
+    og_create_time : "2020-08-29 22:12:00",
+    og_update_time : "2020-08-29 22:12:00"
+};
+var og3 = {
+    og_id : 14,
+    og_dishId :3,
+    og_number : 1,
+    og_price : 10,
+    og_status : "Sending",
+    og_create_time : "2020-08-29 22:12:00",
+    og_update_time : "2020-08-29 22:12:00"
+};
+var ogs = [og1,og2,og3]
+OrderDao.insertOrderAndOrderFood_by_oId(3,1,30,1,ogs,(result)=>{console.log(result)});
 

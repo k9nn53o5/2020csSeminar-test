@@ -61,32 +61,6 @@ router.get('/:cid/orders',function(req,res){
 	})
 });//ok
 
-//find the specific order and the foods in order
-//not implement
-router.get('/:cid/orders/:oid',function(req,res){
-	
-});
-
-//customer insert a new order to restaurant (status:Sending)
-router.post('/:cid/orders',function(req,res){
-	CustomerDao.findById(req.params.cid,function(customer){
-		if(customer === undefined){
-			res.status(400).end();
-			return;
-		}
-		order = req.body;
-		OrderDao.newOrder(order.order_num,order.cId,0,order.rId
-			,function(result){
-				if(result === "OK"){
-					res.status(200).end();
-					return;
-				}
-				res.status(501).end();
-				return;
-			});
-	});		
-});//ok
-
 //customer get the foods (status:FoodArrived)
 router.put('/:cid/action',function(req,res){
 	customerAction = req.body
@@ -114,4 +88,49 @@ router.put('/:cid/action',function(req,res){
 	});
 });//ok
 
+//find the specific order and the foods in order
+//not implement
+router.get('/:cid/orders/:oid',function(req,res){
+	CustomerDao.findById(req.params.cid,function(customer){
+		if(typeof customer != "object"){
+			res.status(400).end();
+			return;
+		}
+		OrderDao.findOrderAndOrderFood_by_oId(req.params.oid,function(oAndOgs){
+
+			if(oAndOgs === "OrderNotExist"){
+				res.status(404).json({"result":"OrderNotExist"});
+				return;
+			}
+			if(oAndOgs[0].cId != req.params.cid){
+				res.status(403).json({"result":"WrongUserAccess"});
+				return;
+			}
+			myJson = JSON.stringify(oAndOgs);
+			res.status(200).json(myJson);
+			return
+		});
+	});		
+});
+
+//customer insert a new order and foods to table order and order_goods 
+router.post('/:cid/orders',function(req,res){
+	let order_num = req.body.order_num;
+	let cId = req.params.cid;
+	let pay_price = req.body.pay_price;
+	let rId = req.body.rId
+	let ogs = req.body.ogs
+	
+	OrderDao.insertOrderAndOrderFood_by_oId(order_num,cId,pay_price,rId,ogs,function(result){
+		if(result === "NewOrderERR"){
+			res.status(400).json({"result":"NewOrderERR"});
+			return;
+		}
+		if(result === "NewOrder_goodsERR"){
+			res.status(400).json({"result":"NewOrder_goodsERR"});
+			return;
+		}
+	});
+	res.status(200).end();
+})
 module.exports = router;
