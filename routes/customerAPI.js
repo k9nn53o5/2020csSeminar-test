@@ -1,9 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var RestaurantDao = require('../model/Restaurant').RestaurantDao;
-var MenuDao = require('../model/Menu').MenuDao;
 var OrderDao = require('../model/Order').OrderDao;
-var Order_goodsDao = require('../model/Order_goods').Order_goodsDao;
 var CustomerDao = require('../model/Customer').CustomerDao
 
 //get all customers
@@ -13,8 +10,7 @@ router.get('/',function(req,res){
 			res.status(404).end();
 			return;
 		}
-		var myJson = JSON.stringify(customers);
-        res.status(200).json(myJson);
+		res.status(200).send(customers);
         return
 	});
 });//ok
@@ -39,8 +35,7 @@ router.get('/:cid',function(req,res){
 			res.status(404).end();
 			return
 		}
-		var myJson = JSON.stringify(customer);
-		res.status(200).json(myJson);
+		res.status(200).send(customer);
 		return
 	})
 });//ok
@@ -55,8 +50,7 @@ router.get('/:cid/orders',function(req,res){
 		if(orders === undefined){
 			res.status(400).end();
 		}
-		let myJson = JSON.stringify(orders);
-		res.status(200).json(myJson);
+		res.status(200).send(orders);
 		return;
 	})
 });//ok
@@ -106,8 +100,7 @@ router.get('/:cid/orders/:oid',function(req,res){
 				res.status(403).json({"result":"WrongUserAccess"});
 				return;
 			}
-			myJson = JSON.stringify(oAndOgs);
-			res.status(200).json(myJson);
+			res.status(200).send(oAndOgs);
 			return
 		});
 	});		
@@ -120,6 +113,19 @@ router.post('/:cid/orders',function(req,res){
 	let pay_price = req.body.pay_price;
 	let rId = req.body.rId
 	let ogs = req.body.ogs
+
+	// ogs:[
+	// 	{
+	// 		"og_dishId":10
+	// 		"og_number":2
+	// 		"og_price":200
+	// 		"og_status":null
+	// 	},
+	// 	{
+
+	// 	},
+	// 	...
+	// ]
 	
 	OrderDao.insertOrderAndOrderFood_by_oId(order_num,cId,pay_price,rId,ogs,function(result){
 		if(result === "NewOrderERR"){

@@ -1,10 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var RestaurantDao = require('../model/Restaurant').RestaurantDao;
-var MenuDao = require('../model/Menu').MenuDao;
 var OrderDao = require('../model/Order').OrderDao;
-var Order_goodsDao = require('../model/Order_goods').Order_goodsDao;
-var CustomerDao = require('../model/Customer').CustomerDao;
 var DeliveryManDao = require('../model/DeliveryMan').DeliveryManDao;
 
 //get all deliveryman
@@ -14,9 +10,8 @@ router.get('/',function(req,res){
 			res.status(404).end();
 			return;
 		}
-
-		var myJson = JSON.stringify(deliverymans);
-		res.status(200).json(myJson);
+		res.status(200).send(deliverymans);
+		
         return
 	})
 	
@@ -28,8 +23,7 @@ router.get('/:did',function(req,res){
 			res.status(404);
 			return ;
 		}
-		var myJson = JSON.stringify(deliveryman);
-		res.status(200).json(myJson);
+		res.status(200).send(deliveryman);
 		return
 	})
 })//ok
@@ -49,7 +43,6 @@ router.post('/',function(req,res){
 
 
 //get the order that delivery man have taken
-//not implement yet
 router.get('/:did/myOrder/status/:status',function(req,res){
 	DeliveryManDao.findById(req.params.did,function(deliveryman){
 		if(deliveryman.length != 1 || deliveryman === undefined){
@@ -63,8 +56,7 @@ router.get('/:did/myOrder/status/:status',function(req,res){
 			res.status(204);
 			return;
 		}
-		var myJson = JSON.stringify(orders);
-		res.status(200).json(myJson);
+		res.status(200).send(orders);
 		return;
 	})
 	res.status(400);

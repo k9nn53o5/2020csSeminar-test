@@ -2,7 +2,6 @@ var express = require('express');
 const { json } = require('body-parser');
 var router = express.Router();
 var OrderDao = require('../model/Order').OrderDao;
-var Order_goodsDao = require('../model/Order_goods').Order_goodsDao;
 
 router.get('/:oid',function(req,res){
 	OrderDao.findOrderAndOrderFood_by_oId(req.params.oid,function(oAndOgs){
@@ -10,8 +9,7 @@ router.get('/:oid',function(req,res){
 			res.status(404).json({"result":"OrderNotExist"});
 			return
 		}
-		myJson = JSON.stringify(oAndOgs);
-		res.status(200).json(myJson);
+		res.status(200).send(oAndOgs);
 		return
 	});
 });

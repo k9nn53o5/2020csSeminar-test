@@ -5,20 +5,16 @@ var MenuDao = require('../model/Menu').MenuDao;
 var OrderDao = require('../model/Order').OrderDao;
 var Order_goodsDao = require('../model/Order_goods').Order_goodsDao;
 
-//以下的restful 必須重寫因為必須避免多级 URL
-//像 GET /authors/12/categories/2 要改成 GET /authors/12?categories=2
-//還有get post delete 的 routr 的 url有些是重複的
 // get all restaurants info
 router.get('/',function(req,res){
     RestaurantDao.getAll(function(restaurants){
         if(restaurants === undefined){
             res.status(400).end();
         }
-        var myJson = JSON.stringify(restaurants);
-        res.status(200).json(myJson);
+        res.status(200).send(restaurants);
         return
     });
-});//ok
+});
 
 // verify the restaurant name and password
 router.post('/verify', function (req, res) {
@@ -74,8 +70,7 @@ router.get('/:rid/menus',function(req,res){
         if(menus === undefined){
             res.status(400).end();
         }
-        var myJson = JSON.stringify(menus);
-        res.status(200).json(myJson);
+        res.status(200).send(menus);
     })
 });//ok
 
@@ -106,27 +101,18 @@ router.delete('/:rid/menus/:mid',function(req,res){
 // get the restaurant info
 router.get('/:rid',function(req,res){
     RestaurantDao.findById(req.params.rid,function(restaurant){
-        var myJson = JSON.stringify(restaurant);
-        res.status(200).json(myJson);
+        res.status(200).send(restaurant);
     })
     res.status(501).end();
 });//ok
-
-//尚未實作//bug 這url名字重複了要改
-//get the restaurants that is around this area
-router.get('/:location',function(req,res){
-});
-//尚未實作
-//get the orders from restaurant
-router.get('/:rid/orders',function(req,res){
-});
 
 //the restaurant update the status of the order (1)start cooking(status:Cooking) (2)finish cooking(status:FoodWasCooked)
 router.put('/:rid/action',function(req,res){
     restaurantAction = req.body;
     OrderDao.findOrderBy_oId(restaurantAction.oId,function(order){
-        if(order.length != 1){
-            res.status(501).end();
+        if(typeof order != "object"){
+            res.status(400).end();
+            console.log(typeof order)
             return;
         }
         if(order[0] === undefined ){
@@ -174,7 +160,12 @@ router.put('/:rid/action',function(req,res){
     });
 });//ok
 
-router.put('/test',function(req,res){
-    res.status(400).json({ "result":"test" });
-});//ok
+//尚未實作//bug 這url名字重複了要改
+//get the restaurants that is around this area
+router.get('/:location',function(req,res){
+});
+//尚未實作
+//get the orders from restaurant
+router.get('/:rid/orders',function(req,res){
+});
 module.exports = router;
