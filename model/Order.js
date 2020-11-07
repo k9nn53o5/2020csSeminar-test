@@ -56,7 +56,7 @@ OrderDao.prototype.newOrder = function(order_num,cId,pay_price,rId,callback){
     var that = this;
     MySQL
     .query(sqlCode,
-        [[[0,cId,0,0,null,0,null,0,null,null,'Sending',create_time,null,null,rId]]],
+        [[[order_num,cId,pay_price,0,null,0,null,0,null,null,'Sending',create_time,null,null,rId]]],
         function(err){
         if(err)
             throw err;
@@ -158,12 +158,12 @@ OrderDao.prototype.findOrderBy_oId = function(oId,callback){
         });
 }
 
-OrderDao.prototype.findOrderBy_dId_status = function(dId,status,callback){
+OrderDao.prototype.findOrderByStatus = function(status,callback){
     var sqlCode = 'SELECT *\
                    FROM dbtest2020_4_2.order\
-                   WHERE ship_man_id = ? AND status = ?';
+                   WHERE status = ?';
     MySQL
-    .query(sqlCode,[dId,status],function(err,rows){
+    .query(sqlCode,[status],function(err,rows){
         if(err)
             throw err;
             
@@ -229,6 +229,7 @@ OrderDao.prototype.r_start_cooking = function(oId,callback){
         });  
     })
 }
+
 OrderDao.prototype.r_finish_cooking = function(oId,callback){
     var sqlCode1 = 'SELECT *\
                     FROM dbtest2020_4_2.order\
@@ -311,30 +312,29 @@ OrderDao.prototype.cus_get_food = function(oId,callback){
         if (row[0].status != 'Delivering'){
             //callback(row.status)
             callback("orderStatusErr");
-        return;
+            return;
         }
-    })
-    
-    var sqlCode = "UPDATE dbtest2020_4_2.order\
-                   SET is_pay=1, pay_time=?, is_receipt=1, receipt_time=?, status='FoodArrived'\
-                   WHERE id=?";
-    var currentDate = new Date();
-    var time = currentDate.getHours()+":"+currentDate.getMinutes();
-    var date = currentDate.getDate();
-    var month = currentDate.getMonth();
-    var year = currentDate.getFullYear();
-    var datetimeStr = year + "-" + (month+1) + "-" + date + " " + time;
-    var curtime = datetimeStr;
 
-    MySQL
+        var sqlCode = "UPDATE dbtest2020_4_2.order\
+        SET is_pay=1, pay_time=?, is_receipt=1, receipt_time=?, status='FoodArrived'\
+        WHERE id=?";
+        var currentDate = new Date();
+        var time = currentDate.getHours()+":"+currentDate.getMinutes();
+        var date = currentDate.getDate();
+        var month = currentDate.getMonth();
+        var year = currentDate.getFullYear();
+        var datetimeStr = year + "-" + (month+1) + "-" + date + " " + time;
+        var curtime = datetimeStr;
+
+        MySQL
         .query(sqlCode,[[curtime],[curtime],[oId]],function(err){
-            if(err)
-                throw err;
-            callback("OK");
+        if(err)
+            throw err;
+        callback("OK");
         });
+
+    });
 }
-
-
 
 function Order_goods(og_id,og_orderId,og_dishId,og_number,og_price,og_status,og_create_time,og_update_time){
     this.og_id = og_id;
@@ -395,7 +395,7 @@ OrderDao.prototype.newAOrder_goods = function(orderId,dishId,number,price,status
                    VALUES ?";
     
     MySQL
-        .query(sqlCode,[[[orderId,dishId,number,price,status,create_time,null]]],function(err){
+        .query(sqlCode,[[[orderId,dishId,number,price,null,create_time,null]]],function(err){
             if(err)
                 throw err;
             callback("OK");

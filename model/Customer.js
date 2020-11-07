@@ -38,11 +38,9 @@ CustomerDao.prototype.cName2cId = function(cName,callback){
             else{callback(undefined);}
     });
 } 
+
 CustomerDao.prototype.findById = function(id,callback){
     MySQL.connect(function(err) {
-        //if (err) throw err;
-        //console.log("Connected!");
-
         var sqlCode = 'SELECT cId, cAddress, cPhoneNum, cName, cPassword \
                     FROM customer\
                     WHERE cId = ?';
@@ -99,26 +97,22 @@ CustomerDao.prototype.newCustomer = function(newCAddress,newCPhone,
     })
 }
 
-CustomerDao.prototype.deleteCustomer = function(delItem,callback){
-    var sqlCode1 = "DELETE FROM customer \
-                    WHERE cId = ?";
-    var sqlCode2 = "DELETE FROM customer \
-                    WHERE cName = ?";
-    var sqlCode;
-    if(typeof(delItem) === 'number'){
-        sqlCode = sqlCode1;
-    }else if(typeof(delItem) === 'string'){
-        sqlCode = sqlCode2;
-    }else{
-        throw Error;
-    }
-    MySQL
-        .query(sqlCode,[[delItem]],function(err){
+CustomerDao.prototype.deleteCustomer = function(cid,callback){
+    this.findById(cid,function(customer){
+        if(customer === undefined){
+            callback("CustomerNotExist");
+            return;
+        }
+
+        let sqlCode = "DELETE FROM customer WHERE cId = ?";
+        MySQL
+        .query(sqlCode,[[cid]],function(err){
             if(err)
                 throw err;
-            console.log("1 record deleted");
-            callback("Delete success");
+            callback("OK");
+            return;
         })
+    })
 }
 module.exports.Customer = Customer;
 module.exports.CustomerDao = new CustomerDao();

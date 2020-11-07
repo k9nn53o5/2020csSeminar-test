@@ -18,15 +18,14 @@ router.get('/',function(req,res){
 
 // verify the restaurant name and password
 router.post('/verify', function (req, res) {
-    let restaurantInfo = req.body;    
-    RestaurantDao.rName2rId(restaurantInfo.name,function(rid){
+    RestaurantDao.rName2rId(req.body.name,function(rid){
         if(rid === undefined){
             res.status(400).json({result: "RestaurantNotExist"});
             return
         }
         RestaurantDao.findById(rid,function(restaurant){
             if(restaurant.password === req.body.password){
-                res.status(200).json({result: "Valid"});
+                res.status(200).json({result: "Valid",id: restaurant.id});
                 return
             }
             else{
@@ -46,7 +45,7 @@ router.post('/',function(req,res){
             return
         }
         else if(result === "OK"){
-            res.status(201).end();
+            res.status(200).end();
             return
         }
     });
@@ -101,9 +100,13 @@ router.delete('/:rid/menus/:mid',function(req,res){
 // get the restaurant info
 router.get('/:rid',function(req,res){
     RestaurantDao.findById(req.params.rid,function(restaurant){
+        if(restaurant === undefined){
+            res.status(400).end();
+            return
+        }
         res.status(200).send(restaurant);
-    })
-    res.status(501).end();
+        return
+    });
 });//ok
 
 //the restaurant update the status of the order (1)start cooking(status:Cooking) (2)finish cooking(status:FoodWasCooked)
@@ -160,12 +163,18 @@ router.put('/:rid/action',function(req,res){
     });
 });//ok
 
-//尚未實作//bug 這url名字重複了要改
-//get the restaurants that is around this area
-router.get('/:location',function(req,res){
-});
-//尚未實作
+
 //get the orders from restaurant
 router.get('/:rid/orders',function(req,res){
+    OrderDao.findOrderBy_rId(req.params.rid,function(orders){
+        if(orders === undefined){
+            res.status(400).end();
+        }
+        res.status(200).send(orders);
+        return;
+    });
 });
+
+
+
 module.exports = router;

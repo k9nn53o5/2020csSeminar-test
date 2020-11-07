@@ -41,6 +41,25 @@ router.post('/',function(req,res){
 
 })//ok
 
+router.post('/verify', function (req, res) {
+	DeliveryManDao.cName2cId(req.body.name,function(did){
+		if(did === undefined){
+			res.status(400).json({result: "DeliveryManNotExist"});
+            return
+		}
+		DeliveryManDao.findById(did,function(deliveryman){
+			if(deliveryman.password === req.body.password){
+				res.status(200).json({result: "Valid",id: deliveryman.id});
+                return
+			}
+			else{
+                res.status(400).json({result: "PasswordWrong"});
+                return
+            }
+
+		})
+	})
+});//ok
 
 //get the order that delivery man have taken
 router.get('/:did/myOrder/status/:status',function(req,res){
