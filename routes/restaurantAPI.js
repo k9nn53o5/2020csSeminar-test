@@ -3,7 +3,6 @@ var router = express.Router();
 var RestaurantDao = require('../model/Restaurant').RestaurantDao;
 var MenuDao = require('../model/Menu').MenuDao;
 var OrderDao = require('../model/Order').OrderDao;
-var Order_goodsDao = require('../model/Order_goods').Order_goodsDao;
 
 // get all restaurants info
 router.get('/',function(req,res){
@@ -82,7 +81,7 @@ router.post('/:rid/menus',function(req,res){
         else if(result === "OK"){
             res.status(200).end();
         }
-    })
+    });
 });//ok
 
 //delete food by mid
@@ -94,6 +93,27 @@ router.delete('/:rid/menus/:mid',function(req,res){
         }
         res.status(200).end();
         return;
+    });
+});//ok
+
+//delete food by name
+router.delete('/:rid/menus/foodName/:name',function(req,res){
+    MenuDao.dName2dId(req.params.name,function(foodid){
+        console.log(foodid);
+        if(foodid === "can't find"){
+            res.status(400).json({"result":"FoodNotExist"});
+            return;
+        }
+        MenuDao.deleteMenu(foodid.dishId,function(result){
+            if(result === "FoodNotExist"){
+                res.status(400).json({"result":"FoodNotExist"});
+                console.log("2");
+                console.log(result);
+                return;
+            }
+            res.status(200).end();
+            return;
+        });
     });
 });//ok
 
@@ -118,7 +138,7 @@ router.put('/:rid/action',function(req,res){
             console.log(typeof order)
             return;
         }
-        if(order[0] === undefined ){
+        if(order[0] === undefined){
             res.status(404).end();
             return;
         }
