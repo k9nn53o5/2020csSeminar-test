@@ -21,12 +21,16 @@ app.use(bodyParser.urlencoded({
 	extended : false
 }));
 
-
 global.MySQL = mysql.createConnection({
 	host : 'localhost',
 	user : 'root',
 	password : 'k9nn53o5', 
 	database : 'dbtest2020_4_2'
+// global.MySQL = mysql.createConnection({
+// 	host : '104.199.229.23',
+// 	user : 'root',
+// 	password : 'k9nn53o5', 
+// 	database : 'dbtest2020_4_2'
 });
 
 app.use('/test', require('./routes/testAPI'));

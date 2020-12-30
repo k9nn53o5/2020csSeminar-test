@@ -449,7 +449,7 @@ OrderDao.prototype.insertOrderAndOrderFood_by_oId = function(order_num,cId,pay_p
                         callback("NewOrder_goodsERR");
                         return;
                     }
-                }); 
+                });
         });
         callback("OK");
     });
